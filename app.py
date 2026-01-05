@@ -1,0 +1,107 @@
+from flask import Flask, render_template, request, session, redirect
+import random
+
+app = Flask(__name__)
+app.secret_key = "guess_logo_secret"
+
+BRAND_NAMES = [
+    "Tata","Reliance","Philips","Zomato","Apple","CocaCola","Nike",
+    "Ola","Byjus","CRED","Amul","Surfexcel",
+    "Ghadi","HDFC","ICICI","AxisBank",
+    "Patanjali","Britannia","Kingfisher","DairyMilk","TataSky"
+]
+
+LOGOS = [
+    {
+        "name": name,
+        "image": f"{name.lower()}.png"
+    }
+    for name in BRAND_NAMES
+]
+
+LEADERBOARD = []
+
+def generate_question():
+    used = session.get("used", [])
+
+    if len(used) == len(LOGOS):
+        return None, None  # GAME OVER
+
+    remaining = [l for l in LOGOS if l["name"] not in used]
+    correct = random.choice(remaining)
+
+    used.append(correct["name"])
+    session["used"] = used
+
+    options = random.sample(
+        [l["name"] for l in LOGOS if l["name"] != correct["name"]],
+        3
+    )
+    options.append(correct["name"])
+    random.shuffle(options)
+
+    return correct, options
+
+
+@app.route("/", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        session.clear()
+        session["username"] = request.form["username"]
+        session["score"] = 0
+        session["question"], session["options"] = generate_question()
+        return redirect("/game")
+    return render_template("login.html")
+
+@app.route("/game", methods=["GET", "POST"])
+def game():
+    if "username" not in session:
+        return redirect("/")
+
+    if request.method == "POST":
+        selected = request.form.get("option")
+        correct = session["question"]["name"]
+
+        if selected == correct:
+            session["score"] += 1
+
+        session["question"], session["options"] = generate_question()
+
+        if session["question"] is None:
+            LEADERBOARD.append({
+                "name": session["username"],
+                "score": session["score"]
+            })
+            return redirect("/game-over")
+
+    return render_template(
+        "game.html",
+        username=session["username"],
+        score=session["score"],
+        question=session["question"],
+        options=session["options"]
+    )
+
+
+@app.route("/reset")
+def reset():
+    if "username" in session:
+        LEADERBOARD.append({
+            "name": session["username"],
+            "score": session["score"]
+        })
+    session.clear()
+    return redirect("/")
+
+@app.route("/game-over")
+def game_over():
+    return render_template(
+        "game_over.html",
+        username=session["username"],
+        score=session["score"],
+        total=len(LOGOS)
+    )
+
+
+if __name__ == "__main__":
+    app.run()

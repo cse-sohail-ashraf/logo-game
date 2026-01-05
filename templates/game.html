@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Guess The Logo</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #232526, #414345);
+            font-family: 'Segoe UI', sans-serif;
+            color: white;
+        }
+        .container {
+            max-width: 420px;
+            margin: 40px auto;
+            background: #1f1f1f;
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+        }
+        img {
+            width: 150px;
+            margin: 20px 0;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 6px 0;
+            border-radius: 10px;
+            border: none;
+            background: #00c6ff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .reset {
+            background: #ff4d4d;
+            margin-top: 15px;
+        }
+    </style>
+
+    <script>
+        let time = 10;
+        setInterval(() => {
+            document.getElementById("time").innerText = time;
+            if (time <= 0) {
+                document.getElementById("form").submit();
+            }
+            time--;
+        }, 1000);
+    </script>
+</head>
+<body>
+
+<div class="container">
+    <h3>👤 {{ username }} | ⭐ {{ score }}</h3>
+    <p>⏱ Time left: <span id="time">10</span>s</p>
+
+    <img src="{{ url_for('static', filename='logos/' + question.image) }}">
+
+    <form method="POST" id="form">
+        {% for option in options %}
+            <button type="submit" name="option" value="{{ option }}">{{ option }}</button>
+        {% endfor %}
+    </form>
+
+    <p>{{ message }}</p>
+
+    <a href="/reset">
+        <button class="reset">End Game</button>
+    </a>
+
+    <h3>🏆 Leaderboard</h3>
+    <ol>
+        {% for user in leaderboard %}
+            <li>{{ user.name }} — {{ user.score }}</li>
+        {% endfor %}
+    </ol>
+</div>
+
+</body>
+</html>

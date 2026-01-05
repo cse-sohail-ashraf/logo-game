@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Guess The Logo</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1d2671, #c33764);
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(12px);
+            padding: 30px;
+            border-radius: 20px;
+            color: white;
+            width: 300px;
+            text-align: center;
+        }
+        input, button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            margin-top: 15px;
+            font-size: 16px;
+        }
+        button {
+            background: #00c6ff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>🧠 Guess The Logo</h1>
+    <form method="POST">
+        <input type="text" name="username" placeholder="Enter your name" required>
+        <button type="submit">Start Game</button>
+    </form>
+</div>
+
+</body>
+</html>

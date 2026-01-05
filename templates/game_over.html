@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Game Over</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            font-family: 'Segoe UI', sans-serif;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(12px);
+            padding: 40px;
+            border-radius: 25px;
+            text-align: center;
+            width: 320px;
+        }
+
+        h1 {
+            color: #00c6ff;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px;
+            width: 100%;
+            border-radius: 10px;
+            border: none;
+            background: #00c6ff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>🏁 Game Over</h1>
+    <h2>{{ username }}</h2>
+
+    <p>Final Score</p>
+    <h1>{{ score }} / {{ total }}</h1>
+
+    <a href="/">
+        <button>Play Again</button>
+    </a>
+</div>
+
+</body>
+</html>
