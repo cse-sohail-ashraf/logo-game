@@ -7,7 +7,7 @@ app.secret_key = "guess_logo_secret"
 BRAND_NAMES = [
     "Reliance","RevlonLipStick","Philips","Apple","CocaCola","Nike",
     "Ola","Byjus","CRED","Amul","Surfexcel","Mcdonald's","AsianPaints","Disney",
-    "Ghadi","ICICI","AxisBank","snickers","kurkure","Manyavar","KalyanBabu","Pepsi",
+    "Ghadi","ICICI","AxisBank","Snickers","kurkure","Manyavar","KalyanBabu","Pepsi",
     "Patanjali","Britannia","Kingfisher","DairyMilk","TataSky","RedBull","SubWay","LouisVuitton"
 ]
 
