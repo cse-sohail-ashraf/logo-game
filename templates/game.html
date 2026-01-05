@@ -85,6 +85,13 @@
     </div>
 
     <div class="message" id="msg"></div>
+
+    <button
+    style="background:#ff4d4d; margin-top:15px"
+    onclick="endGame()">
+    ⏹ End Game
+    </button>
+
 </div>
 
 <!-- Sounds -->
@@ -156,6 +163,21 @@ function submitAnswer(option) {
         }, 800);
     });
 }
+
+function endGame() {
+    clearInterval(timer);
+
+    fetch("/end-game", {
+        method: "POST"
+    })
+    .then(() => {
+        document.getElementById("gameOverSound").play();
+        setTimeout(() => {
+            window.location.href = "/game-over";
+        }, 800);
+    });
+}
+
 </script>
 
 </body>

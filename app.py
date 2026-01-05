@@ -137,6 +137,17 @@ def answer():
         "options": session["options"],
         "name": session["question"]["name"]
     })
+    
+
+@app.route("/end-game", methods=["POST"])
+def end_game():
+    if "username" in session:
+        LEADERBOARD.append({
+            "name": session["username"],
+            "score": session["score"]
+        })
+    return jsonify({"end": True})
+
 
 
 if __name__ == "__main__":
