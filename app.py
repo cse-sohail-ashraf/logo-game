@@ -5,10 +5,10 @@ app = Flask(__name__)
 app.secret_key = "guess_logo_secret"
 
 BRAND_NAMES = [
-    "Tata","Reliance","Philips","Zomato","Apple","CocaCola","Nike",
+    "Reliance","RevlonLipStick","Philips","Apple","CocaCola","Nike",
     "Ola","Byjus","CRED","Amul","Surfexcel",
-    "Ghadi","HDFC","ICICI","AxisBank",
-    "Patanjali","Britannia","Kingfisher","DairyMilk","TataSky"
+    "Ghadi","ICICI","AxisBank","snickers","kurkure",
+    "Patanjali","Britannia","Kingfisher","DairyMilk","TataSky","RedBull"
 ]
 
 LOGOS = [
