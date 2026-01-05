@@ -102,6 +102,42 @@ def game_over():
         total=len(LOGOS)
     )
 
+from flask import jsonify
+
+@app.route("/answer", methods=["POST"])
+def answer():
+    if "username" not in session:
+        return jsonify({"game_over": True})
+
+    data = request.json
+    selected = data.get("option")
+    correct = session["question"]["name"]
+
+    result = selected == correct
+    if result:
+        session["score"] += 1
+
+    session["question"], session["options"] = generate_question()
+
+    if session["question"] is None:
+        LEADERBOARD.append({
+            "name": session["username"],
+            "score": session["score"]
+        })
+        return jsonify({
+            "game_over": True,
+            "score": session["score"],
+            "total": len(LOGOS)
+        })
+
+    return jsonify({
+        "correct": result,
+        "score": session["score"],
+        "image": session["question"]["image"],
+        "options": session["options"],
+        "name": session["question"]["name"]
+    })
+
 
 if __name__ == "__main__":
     app.run()

@@ -4,76 +4,159 @@
     <title>Guess The Logo</title>
     <style>
         body {
-            background: linear-gradient(135deg, #232526, #414345);
+            background: radial-gradient(circle at top, #1b2735, #090a0f);
             font-family: 'Segoe UI', sans-serif;
             color: white;
         }
+
         .container {
             max-width: 420px;
             margin: 40px auto;
-            background: #1f1f1f;
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(12px);
             padding: 25px;
-            border-radius: 20px;
+            border-radius: 25px;
             text-align: center;
         }
+
         img {
             width: 150px;
             margin: 20px 0;
+            transition: transform 0.3s ease;
         }
+
+        img:hover {
+            transform: scale(1.05);
+        }
+
         button {
             width: 100%;
-            padding: 12px;
-            margin: 6px 0;
-            border-radius: 10px;
+            padding: 14px;
+            margin: 8px 0;
+            border-radius: 14px;
             border: none;
-            background: #00c6ff;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
             font-size: 16px;
             cursor: pointer;
+            color: white;
+            transition: transform 0.2s;
         }
-        .reset {
-            background: #ff4d4d;
-            margin-top: 15px;
+
+        button:hover {
+            transform: scale(1.04);
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+        }
+
+        .timer {
+            color: #00e5ff;
+            margin: 10px 0;
+        }
+
+        .message {
+            margin-top: 10px;
+            font-size: 18px;
         }
     </style>
-
-    <script>
-        let time = 10;
-        setInterval(() => {
-            document.getElementById("time").innerText = time;
-            if (time <= 0) {
-                document.getElementById("form").submit();
-            }
-            time--;
-        }, 1000);
-    </script>
 </head>
 <body>
 
 <div class="container">
-    <h3>👤 {{ username }} | ⭐ {{ score }}</h3>
-    <p>⏱ Time left: <span id="time">10</span>s</p>
+    <div class="top">
+        <div>👤 {{ username }}</div>
+        <div>⭐ <span id="score">{{ score }}</span></div>
+    </div>
 
-    <img src="{{ url_for('static', filename='logos/' + question.image) }}">
+    <div class="timer">⏱ <span id="time">10</span>s</div>
 
-    <form method="POST" id="form">
+    <img id="logo"
+         src="{{ url_for('static', filename='logos/' + question.image) }}">
+
+    <div id="options">
         {% for option in options %}
-            <button type="submit" name="option" value="{{ option }}">{{ option }}</button>
+            <button onclick="submitAnswer('{{ option }}')">
+                {{ option }}
+            </button>
         {% endfor %}
-    </form>
+    </div>
 
-    <p>{{ message }}</p>
-
-    <a href="/reset">
-        <button class="reset">End Game</button>
-    </a>
-
-    <h3>🏆 Leaderboard</h3>
-    <ol>
-        {% for user in leaderboard %}
-            <li>{{ user.name }} — {{ user.score }}</li>
-        {% endfor %}
-    </ol>
+    <div class="message" id="msg"></div>
 </div>
+
+<!-- Sounds -->
+<audio id="correctSound" src="{{ url_for('static', filename='sounds/correct.mp3') }}"></audio>
+<audio id="wrongSound" src="{{ url_for('static', filename='sounds/wrong.mp3') }}"></audio>
+<audio id="gameOverSound" src="{{ url_for('static', filename='sounds/gameover.mp3') }}"></audio>
+
+<script>
+let time = 10;
+let timer;
+
+function startTimer() {
+    time = 10;
+    document.getElementById("time").innerText = time;
+    timer = setInterval(() => {
+        time--;
+        document.getElementById("time").innerText = time;
+        if (time <= 0) {
+            clearInterval(timer);
+            submitAnswer("");
+        }
+    }, 1000);
+}
+
+startTimer();
+
+function submitAnswer(option) {
+    clearInterval(timer);
+
+    fetch("/answer", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({option: option})
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.game_over) {
+            document.getElementById("gameOverSound").play();
+            setTimeout(() => {
+                window.location.href = "/game-over";
+            }, 1200);
+            return;
+        }
+
+        document.getElementById("score").innerText = data.score;
+
+        if (data.correct) {
+            document.getElementById("correctSound").play();
+            document.getElementById("msg").innerText = "✅ Correct!";
+        } else {
+            document.getElementById("wrongSound").play();
+            document.getElementById("msg").innerText = "❌ Wrong!";
+        }
+
+        setTimeout(() => {
+            document.getElementById("logo").src =
+                "/static/logos/" + data.image;
+
+            const optionsDiv = document.getElementById("options");
+            optionsDiv.innerHTML = "";
+
+            data.options.forEach(opt => {
+                optionsDiv.innerHTML +=
+                    `<button onclick="submitAnswer('${opt}')">${opt}</button>`;
+            });
+
+            document.getElementById("msg").innerText = "";
+            startTimer();
+        }, 800);
+    });
+}
+</script>
 
 </body>
 </html>
